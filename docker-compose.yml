@@ -1,0 +1,53 @@
+version: '3'
+services:
+    nginx:
+        build:
+            context: ./docker
+            dockerfile: ./nginx.docker
+        volumes:
+            - ./:/var/www
+            - ./docker/nginx/ssl:/etc/nginx/ssl
+        ports:
+            - "8075:80"
+        links:
+            - php-fpm
+
+    redis:
+        image: redis:3.0
+        ports:
+            - "63791:6379"
+    php-fpm:
+        build:
+            context: ./docker
+            dockerfile: ./php-fpm.docker
+        volumes:
+            - ./:/var/www
+    php-cli:
+        build:
+            context: ./docker
+            dockerfile: ./php-cli.docker
+        volumes:
+            - ./:/var/www
+        tty: true
+    node:
+        image: node:18.12.0-alpine
+        volumes:
+            - ./:/var/www
+        working_dir: /var/www
+        ports:
+          - 5173:5173
+        tty: true
+    postgres:
+        image: postgres:13
+        restart: always
+        environment:
+            - "POSTGRES_USER=app"
+            - "POSTGRES_PASSWORD=secret"
+            - "POSTGRES_DB=app"
+        ports:
+            - "5432:5432"
+        volumes:
+            - ./storage/docker/postgres:/var/lib/postgresql/data
+        expose:
+            - "5432"
+        user: "${DOCKER_USER:-root}"

@@ -1,0 +1,33 @@
+FROM php:8.3-fpm
+
+RUN apt-get update && apt-get upgrade -y && apt-get install -y libmcrypt-dev
+RUN apt-get install git -y
+
+
+RUN docker-php-ext-install sockets
+RUN apt-get update && apt-get install -y apt-transport-https
+
+#install some base extensions
+RUN apt-get install -y \
+        libzip-dev \
+        zip \
+  && docker-php-ext-install zip
+
+RUN apt-get update && \
+    apt-get install -y libxml2-dev
+RUN docker-php-ext-install soap
+
+
+
+RUN apt-get update && apt-get install -y \
+    libxml2-dev \
+    ca-certificates \
+    && update-ca-certificates
+
+    
+
+RUN apt-get install -y libpq-dev \
+    && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
+    && docker-php-ext-install pdo pdo_pgsql pgsql
+
+WORKDIR /var/www/

@@ -11,11 +11,6 @@ services:
             - "8075:80"
         links:
             - php-fpm
-
-    redis:
-        image: redis:3.0
-        ports:
-            - "63791:6379"
     php-fpm:
         build:
             context: ./docker
@@ -28,14 +23,6 @@ services:
             dockerfile: ./php-cli.docker
         volumes:
             - ./:/var/www
-        tty: true
-    node:
-        image: node:18.12.0-alpine
-        volumes:
-            - ./:/var/www
-        working_dir: /var/www
-        ports:
-          - 5173:5173
         tty: true
     postgres:
         image: postgres:13

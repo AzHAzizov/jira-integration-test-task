@@ -1,61 +1,85 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Jira Integration Test Task
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This repository contains a simple Laravel 12 application that connects to a Jira Cloud project and demonstrates basic API operations.
 
-## About Laravel
+## Assignment
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+From the given task:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. Create a simple application that can connect to the project `icewarp-test` in Jira.
+2. Create/edit a task via the API.
+3. Create/edit a comment on a task.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+✅ All points have been implemented.
 
-## Learning Laravel
+## Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- Connects to a Jira Cloud project  
+- Create and update issues (tasks)  
+- Add and edit comments on issues  
+- Console commands for quick testing  
+- REST API routes for HTTP interaction  
+- Integration tests with Pest to verify Jira connectivity  
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Requirements
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- PHP 8.2+  
+- Composer  
+- Docker (optional, `docker-compose.yml` is included)  
+- Jira Cloud account + API token  
 
-## Laravel Sponsors
+## Installation
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+git clone https://github.com/AzHAzizov/jira-integration-test-task.git
+cd jira-integration-test-task
 
-### Premium Partners
+composer install
+cp .env.example .env
+php artisan key:generate
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+# Configuration
 
-## Contributing
+## Fill in your Jira credentials in .env (or .env.testing for tests):
+```
+JIRA_BASE_URL=https://iw-sandbox.atlassian.net
+JIRA_EMAIL=your.email@example.com
+JIRA_API_TOKEN=your_api_token
+JIRA_PROJECT_KEY=IC
+JIRA_ALLOW_DELETE=true
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# Usage
+## Console commands
++ Create issue and comment
+```
+php artisan jira:demo "Demo issue from CLI"
+```
++ Update issue
+```
+php artisan jira:update ISSUE-KEY --summary="New summary" --description="New description"
 
-## Code of Conduct
+```
++ Add comment
+```
+php artisan jira:comment ISSUE-KEY "My comment"
+```
++ Edit comment
+```
+php artisan jira:comment-edit ISSUE-KEY COMMENT-ID "Updated comment text"
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# API routes
+```
+POST /api/jira/issues → create issue
+PUT /api/jira/issues/{issueKey} → update issue
+POST /api/jira/issues/{issueKey}/comments → add comment
+PUT /api/jira/issues/{issueKey}/comments/{commentId} → update comment
+```
 
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Tests
+## Integration tests are implemented with Pest:
+```
+php artisan test --group=external
+```

@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Jira\AddCommentRequest;
+use App\Http\Requests\Jira\CreateIssueRequest;
+use App\Http\Requests\Jira\UpdateCommentRequest;
+use App\Http\Requests\Jira\UpdateIssueRequest;
 use App\Services\JiraClient;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -11,55 +15,30 @@ class JiraController extends Controller
     public function __construct(private JiraClient $jira) {}
 
     // POST /api/jira/issues
-    public function createIssue(Request $request)
+    public function createIssue(CreateIssueRequest $request)
     {
-        $data = $request->validate([
-            'projectKey'  => 'required|string',
-            'summary'     => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'issueType'   => 'nullable|string',
-        ]);
-
-        $created = $this->jira->createIssue($data);
-
+        $created = $this->jira->createIssue($request->validated());
         return response()->json($created, Response::HTTP_CREATED);
     }
 
     // PUT /api/jira/issues/{issueKey}
-    public function updateIssue(string $issueKey, Request $request)
+    public function updateIssue(string $issueKey, UpdateIssueRequest $request)
     {
-        $fields = $request->validate([
-            'summary'     => 'sometimes|string|max:255',
-            'description' => 'sometimes|string',
-            // Add more Jira fields as needed
-        ]);
-
-        $this->jira->editIssue($issueKey, $fields);
-
+        $this->jira->editIssue($issueKey, $request->validated());
         return response()->json(['status' => 'ok']);
     }
 
     // POST /api/jira/issues/{issueKey}/comments
-    public function addComment(string $issueKey, Request $request)
+    public function addComment(string $issueKey, AddCommentRequest $request)
     {
-        $data = $request->validate([
-            'body' => 'required|string',
-        ]);
-
-        $comment = $this->jira->addComment($issueKey, $data['body']);
-
+        $comment = $this->jira->addComment($issueKey, $request->validated('body'));
         return response()->json($comment, Response::HTTP_CREATED);
     }
 
     // PUT /api/jira/issues/{issueKey}/comments/{commentId}
-    public function updateComment(string $issueKey, string $commentId, Request $request)
+    public function updateComment(string $issueKey, string $commentId, UpdateCommentRequest $request)
     {
-        $data = $request->validate([
-            'body' => 'required|string',
-        ]);
-
-        $comment = $this->jira->editComment($issueKey, $commentId, $data['body']);
-
+        $comment = $this->jira->editComment($issueKey, $commentId, $request->validated('body'));
         return response()->json($comment);
     }
 }
